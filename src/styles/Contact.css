@@ -1,0 +1,140 @@
+.form {
+    margin: 20px;
+}
+
+#formulaire {
+    background: #26348C; /* couleur principale */
+    color: white;
+    border-radius: 20px;
+
+    /* Neumorphism / glassy effect */
+    box-shadow: 
+        8px 8px 16px rgba(0, 0, 0, 0.4),   /* ombre sombre à droite/bas */
+        -8px -8px 16px rgba(50, 50, 150, 0.3); /* lumière douce à gauche/haut */
+
+    padding: 25px;
+    backdrop-filter: blur(5px); /* effet flou si background semi-transparent */
+    border: 1px solid rgba(255, 255, 255, 0.1); /* contour très léger */
+
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+/* Effet hover dynamique */
+#formulaire:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 
+        12px 12px 24px rgba(0, 0, 0, 0.5),
+        -12px -12px 24px rgba(50, 50, 150, 0.35);
+}
+
+#carte {
+    border: 4px solid #26348C !important;
+    border-radius: 20px;
+    height: 500px;
+    width: 100%; /* largeur similaire au formulaire, s’adapte au container */
+
+    /* Neumorphism / glassy effect comme le formulaire */
+    box-shadow: 
+        8px 8px 16px rgba(0, 0, 0, 0.4),
+        -8px -8px 16px rgba(50, 50, 150, 0.3);
+
+    /* Pour un effet interactif */
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+/* Effet hover dynamique identique au formulaire */
+#carte:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 
+        12px 12px 24px rgba(0, 0, 0, 0.5),
+        -12px -12px 24px rgba(50, 50, 150, 0.35);
+}
+
+
+.container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.containers #row,#localisation{
+    margin: 30px;
+}
+.btn-primary{
+    background: #ffff !important;
+    color: #26348C !important;
+    border: none !important;
+    border-radius: 20px;
+    padding: 10px 20px;
+}
+.button{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.title .divider {
+    width: 190px;
+    height: 5px;
+    background: #D9D9D9;
+    border-radius: 15px;
+}
+
+.title {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    margin-top: 15px;
+    z-index: 1;
+}
+
+.paragrahe {
+    font-size: 1.4rem;
+    font-weight: 400;
+    color: #000000;
+    text-align: center;
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
+.section2 {
+    position: relative;
+    width: 100%;
+    height: 90vh;
+    background-size: cover;
+    background-color: #26348c7b;
+    background-image: url('../assets/produitf.png');
+    overflow: hidden;
+    margin-top: -20px;
+}
+
+.section2,
+.section3 {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.section2::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #26348c7b;
+    z-index: 0;
+}
+
+.section2 h4 {
+    z-index: 1;
+    color: #ffffff;
+    font-size: 4rem;
+    font-weight: 900;
+    text-align: center;
+}

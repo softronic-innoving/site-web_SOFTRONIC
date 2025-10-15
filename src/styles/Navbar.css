@@ -1,0 +1,184 @@
+.navbar-expand-lg{
+border-bottom: 2px solid #26348C;
+}
+.navbar-expand-lg .navbar-collapse{
+    margin-left: 180px;
+}
+/* head container */
+.head {
+  background: #26348C;
+  width: 100%;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* variables configurables */
+:root {
+  --tiret-min-width: 60px;            /* largeur minimale */
+  --tiret-max-width: 400px;           /* largeur maximale */
+  --tiret-vw: 30vw;                   /* largeur relative (pour responsive) */
+  --tiret-duration: 900ms;            /* durée d'animation */
+  --tiret-delay: 1200ms;              /* délai avant démarrage */
+  --tiret-easing: cubic-bezier(.2,.8,.2,1);
+  --tiret-initial-scale: 0.18;        /* taille au démarrage (0..1) */
+}
+
+/* la span visible — conteneur pour pseudo-élément */
+.head .tiret {
+  display: inline-block;
+  width: clamp(var(--tiret-min-width), var(--tiret-vw), var(--tiret-max-width));
+  height: 2px;                  /* hauteur du trait */
+  position: relative;
+  vertical-align: middle;
+  /* background transparent: la couleur réelle est sur ::before */
+  background: transparent;
+  /* allow transforms on GPU */
+  transform: translateZ(0);
+}
+
+/* pseudo élément qui représente le trait réel */
+.head .tiret::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  background-color: #fff;        /* couleur blanche correcte */
+  transform-origin: left center;
+  transform: scaleX(var(--tiret-initial-scale)); /* état initial */
+  /* pas d'animation par défaut : contrôlé par classe is-anim (SPA safe) */
+}
+
+/* classe qui déclenche l'animation (recommandée pour SPA) */
+.head .tiret.is-anim::before {
+  animation-name: expandTiret;
+  animation-duration: var(--tiret-duration);
+  animation-timing-function: var(--tiret-easing);
+  animation-fill-mode: forwards;   /* conserve l'état final */
+  animation-delay: var(--tiret-delay);
+}
+
+/* Keyframes : démarre petit, garde petit pendant ~40% du temps, puis s'étend */
+@keyframes expandTiret {
+  0% { transform: scaleX(var(--tiret-initial-scale)); }
+  40% { transform: scaleX(var(--tiret-initial-scale)); }
+  100% { transform: scaleX(1); }
+}
+
+.nav-link {
+  font-weight: bold !important;
+}
+
+.nav-link.active {
+  border-bottom: 3px solid #26348C;
+  color: #26348C !important;
+}
+
+/* ===================================================
+   Zone droite grise pour logo BRAINOPX(navbar-custom)
+   =================================================== */
+
+.navbar-custom {
+  position: relative;          /* conteneur pour pseudo-élément */
+  z-index: 1000;               /* au-dessus du head éventuellement */
+  background-color: transparent; /* la couleur principale gérée par ::after */
+  /* si tu veux une barre principale blanche, laisse le body blanc derrière */
+  display: flex;
+  justify-content: flex-end;   /* pousse le contenu vers la droite */
+  align-items: center;         /* centre verticalement */
+}
+
+/* Panneau droit: remplissage gris #575656 */
+.navbar-custom::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  /* width responsive : change selon breakpoint - ajuster si besoin */
+  width: clamp(140px, 20vw, 150px);  
+  background-color: #575656;   /* couleur demandée */
+  z-index: 1010;               /* placé sous le contenu de la navbar (logo) */
+  /* arrondi uniquement sur la gauche en bas pour l'effet demandé */
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 48px; 
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06); /* léger relief */
+  pointer-events: none;        /* laisser les clics passer aux éléments au-dessus */
+}
+
+/* Option : un petit trait décoratif à la jonction blanc->gris (bas gauche du panneau) */
+.navbar-custom::before {
+  /* decoration thin strip bottom-left */
+  content: "";
+  position: absolute;
+  right:  calc(clamp(120px, 20vw, 320px) - 8px); /* placer à environ la jonction gauche */
+  bottom: 6px;
+  width: 10px;
+  height: 6px;
+  background-color: #ffffff;   /* couleur de séparation visible */
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+  z-index: 1011;
+  opacity: 0.85;
+  pointer-events: none;
+  transform-origin: right center;
+}
+
+/* Assure que le logo (badge) est au-dessus du panneau gris */
+.logo-badge {
+  position: relative;         /* au-dessus du ::after grâce au z-index */
+  z-index: 1020;
+  background: transparent;    /* pas de noir */
+  padding: 8px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;      /* occupe toute la hauteur de la navbar */
+  padding: 0 20px;   /* espace horizontal autour du logo */
+  /* si on veut un cadre autour du logo (optionnel), utiliser outline ou box-shadow */
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+/* Respecter les utilisateurs préférant peu d'animations */
+@media (prefers-reduced-motion: reduce) {
+  .head .tiret::before {
+    transform: scaleX(1) !important;
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+@media only screen and (max-width: 767px) {
+  .nav-link.active {
+    border-bottom: none;
+  }
+}
+
+@media only screen and (min-width: 768px) and (max-width: 1024px) {
+  .nav-link.active {
+    border-bottom: none;
+  }
+}
+
+/* Si tu veux que la zone autour du logo soit un carré foncé (ex: background plus sombre) -> optionnel */
+/* .logo-badge .logo-badge__img { background: #fff; border-radius: 10px; padding: 6px; } */
+
+/* Ajustements responsive */
+@media (max-width: 768px) {
+  .navbar-custom::after {
+    width: clamp(120px, 30vw, 200px);
+    border-bottom-left-radius: 28px;
+  }
+  .navbar-custom::before {
+    right: calc(clamp(120px, 30vw, 200px) - 8px);
+  }
+  .logo-badge {
+    padding: 6px;
+  }
+}

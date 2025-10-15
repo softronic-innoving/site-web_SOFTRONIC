@@ -1,0 +1,212 @@
+/* EventCard.css - overlay badge design (adapted to place the badge half on image, half on frame) */
+:root{
+  --card-radius: 14px;
+  --badge-bg: #26348C;        /* ajuster au bleu voulu */
+  --badge-border-width: 4px;  /* bordure blanche autour du badge */
+  --badge-radius: 12px;
+  --badge-padding: 12px;
+  --card-shadow: 0 10px 30px rgba(128, 128, 250, 0.3    );
+  --muted: #f0f0f0;
+    /* contrôle position/tailles du badge (modifiable pour tuning) */
+  --frame-padding: 4px;         /* padding blanc autour de l'image (cadre) */
+  --badge-base-w: 340px;         /* largeur desktop par défaut */
+  --badge-base-h: 110px;         /* hauteur desktop par défaut */
+}
+
+/* container de la carte */
+.event-card {
+  width: 100%;
+  background: transparent;
+  border-radius: var(--card-radius);
+  overflow: visible; /* IMPORTANT: laisse l'overflow visible pour le badge */
+  display: block;
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+
+/* effet hover léger pour desktop */
+.event-card:hover {
+  transform: translateY(-6px);
+}
+
+/* wrapper qui crée le cadre blanc autour de l'image
+   -> padding blanc sur les 4 cotés (cadre), image inside */
+.event-image-wrapper {
+  position: relative;
+  width: 100%;
+  padding: var(--frame-padding);  /* cadre blanc tout autour et contrôlé par variable */
+  background: #ffffff;           /* couleur du cadre */
+  border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow);
+  box-sizing: border-box;
+  overflow: visible; /* IMPORTANT: permet au badge de déborder vers le bas du wrapper */
+}
+
+/* l'image (plein cover) */
+.event-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: calc(var(--card-radius) - var(--frame-padding)); /* arrondi interne */
+  vertical-align: middle;
+  aspect-ratio: 16/9; /* bonne base, mobile ajuste */
+  max-height: 360px;  /* limite hauteur desktop si besoin */
+}
+
+/* overlay cliquable (si JS handler) */
+.click-overlay {
+  position: absolute;
+  inset: 0;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+/* ================================================================
+   INFO BADGE (petite carte bleue) - POSITIONNEMENT : centré horizontalement, moitié supérieur sur image/moitié inférieur en dehors de l'image.
+
+   =============================================================== */
+/* Positionnement : centre horizontal + centre vertical du badge situé sur la ligne
+   correspondant au bas de l'image (donc badge moitié sur image / moitié en dehors).
+   top = (100% - frame-padding) - (badge-height / 2)
+   -> calc(100% - var(--frame-padding) - (var(--badge-base-h) / 2))
+*/
+.info-badge {
+  position: absolute;
+  left: 50%;
+  top: calc(100% - var(--frame-padding) - (var(--badge-base-h) / 2));
+  transform: translateX(-50%); /* centre horizontal, pas de translateY pour garder centre relatif */
+  z-index: 30;
+  box-shadow: var(--card-shadow);
+
+  /* Taille contrôlée par variable et modifiable (desktop) - la hauteur est contrôlée et le contenu scroll si besoin */
+  width: var(--badge-base-w);
+  height: var(--badge-base-h);
+  min-width: 140px;
+  max-width: 87%; /* safeguard small screens */
+
+  background: var(--badge-bg);
+  color: #fff;
+  border-radius: var(--badge-radius);
+  padding: var(--badge-padding);
+  box-shadow: 0 8px 22px rgba(10,20,40,0.18);
+  border: var(--badge-border-width) solid #fff; /* bordure blanche sur 4 cotés */
+  box-sizing: border-box;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 6px;
+
+  /* Si texte trop long -> scroll interne (petit scroll visible sur mobile) */
+ overflow: hidden; /* contenu excédentaire caché / scroll inside badge-body */
+}
+
+
+/* header : petit point + titre alignés sur la même ligne */
+.badge-header {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex: 0 0 auto;  /* ne prend pas d'espace flexible */
+}
+
+/* petit point blanc */
+.badge-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #fff;
+  flex: 0 0 5px;
+}
+
+/* titre en blanc, gras, taille un peu plus grande */
+.badge-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1;
+}
+
+/* corps du badge : paragraphes blancs, espacement serré, 
+body qui peut défiler si la hauteur est limitée*/
+.badge-body {
+  overflow: auto;
+  flex: 1 1 auto;   /* prend l'espace restant à l'intérieur du badge */
+  padding-right: 4px; /* espace pour éviter chevauchement scrollbar */
+}
+
+/* s'assurer que le texte n'élargisse pas la carte */
+.badge-paragraph {
+  margin: 0 0 6px 0;
+  color: #fff;
+  font-size: 0.85rem;
+  line-height: 1.2;
+  text-align: left;
+}
+
+/* date en bas (prend un alignement distinct) */
+.badge-date {
+  margin: 6px 0 0 0;
+  font-size: 0.78rem;
+  color: #fff;
+  opacity: 0.95;
+  font-weight: 600;
+  flex: 0 0 auto;
+}
+
+/* petite optimisation : masquer la scrollbar verticale si possible (esthétique)
+   - garde un fallback propre si le navigateur n'autorise pas hide. */
+.badge-body::-webkit-scrollbar { width: 6px; }
+.badge-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.18); border-radius: 6px; }
+
+/* ------------- RESPONSIVE ADJUSTS ------------- */
+/* tablet */
+@media (max-width: 992px) {
+    :root { 
+        --badge-base-w: 220px; 
+        --badge-base-h: 98px;  
+    }
+  .event-image { aspect-ratio: 4/3; max-height: 320px; }
+  .info-badge {  padding: 10px; }
+  .badge-title { font-size: 0.98rem; }
+  .badge-paragraph { font-size: 0.82rem; }
+}
+
+/* small mobile phones */
+@media (max-width: 576px) {
+    :root { 
+        --badge-base-w: 180px; 
+        --badge-base-h:86px; 
+    }
+  .event-image-wrapper { padding: 10px; }
+  .event-image { aspect-ratio: 3/2; max-height: 280px; border-radius: 8px; }
+  .info-badge {
+    padding: 8px;
+    border-width: calc(var(--badge-border-width) - 1px);
+  }
+  .badge-title { font-size: 0.95rem; }
+  .badge-paragraph { font-size: 0.78rem; }
+  .badge-dot { width: 6px; height: 6px; }
+}
+
+/* very small screens / wearable (watch) : simplified */
+@media (max-width: 360px) {
+    :root { 
+        --badge-base-w: 140px; 
+        --badge-base-h: 70px; 
+    }
+  /* hide paragraphs and keep title+date only to save space */
+  .badge-paragraph { display: none; } /* conserve titre + date seulement */
+  .info-badge { width: var(--badge-base-w); height: var(--badge-base-h); padding: 6px; }
+  .badge-title { font-size: 0.86rem; }
+  .badge-date { font-size: 0.72rem; }
+  /* optionally reduce image heavy load: you might prefer to hide image entirely on watch */
+}
+
+/* large screens: increase badge width */
+@media (min-width: 1400px) {
+  .info-badge { min-width: 260px; padding: 14px; left: 22px; bottom: 22px; }
+  .badge-title { font-size: 1.05rem; }
+  .badge-paragraph { font-size: 0.9rem; }
+}

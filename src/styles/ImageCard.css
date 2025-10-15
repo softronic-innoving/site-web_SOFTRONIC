@@ -1,0 +1,140 @@
+/* ImageCard.css — Version améliorée
+   Objectifs :
+   - Espacements strictement identiques entre images (grid gap)
+   - Responsivité forte (clamp, minmax, auto-fit)
+   - Eviter CLS (aspect-ratio + fallback)
+   - Accessibilité (focus), bonnes pratiques "senior"
+*/
+
+/* === Design tokens (centralisés, facilement overrideables) === */
+:root {
+  --imagecard-max-width: 1200px; /* keep aligned with text-image banner container */
+  --imagecard-gutter: 12px;      /* horizontal spacing between cards (adjustable), legacy gutter (kept for paddings) */
+  --imagecard-gap: clamp(8px, 1.2vw, 24px); /* GAP between cards (dynamic) */
+  --imagecard-radius: 8px;
+  --imagecard-shadow: 0 10px 30px rgba(46, 109, 234, 0.08); /* slight bluish shadow */
+  --imagecard-min-width: clamp(120px, 18vw, 260px); /* min width per card */
+  --imagecard-ratio: 4 / 3; /* default aspect ratio — change to 16/9 if needed */
+  --imagecard-focus-ring: 3px solid rgba(46,109,234,0.18);
+}
+
+/*  Base container / card outer container: make it flexible to fit grid/col */
+.image-card {
+  width: 100%;
+  display: block;
+  box-sizing: border-box;
+  /* leave margin/padding control to grid container; do not rely on sibling margins for gaps */
+}
+
+/* === Media wrapper: enforces consistent box size + avoids CLS === */
+.image-card__media {
+  width: 100%;
+  display: block;
+  position: relative;
+  overflow: hidden;
+  background-color: #f6f6f6; /* placeholder while loading */
+  border-radius: var(--imagecard-radius);
+  /* modern: fix ratio */
+  aspect-ratio: var(--imagecard-ratio);
+  transition: transform 200ms ease, box-shadow 200ms ease;
+}
+
+/* Fallback pour navigateurs sans aspect-ratio */
+@supports not (aspect-ratio: 1/1) {
+  .image-card__media { height: 0; padding-top: calc(100% / ( (var(--imagecard-ratio) ) )); }
+  /* Note: calc on custom ratio isn't widely supported; alternative: explicit percent fallback */
+  /* If you expect older browsers, set: padding-top: 75%; for 4:3 fallback */
+}
+
+/* Image behavior, actual <img> styles (covers full area) */
+.image-card__img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;   /* important: crops but keeps center */
+  object-position: center center;
+  vertical-align: middle;
+  -webkit-user-drag: none;
+  border-radius: inherit; /* match container */
+  /* Improve perceived perf when hovering (GPU accel) */
+  transform: translateZ(0);
+}
+
+/* Optional: subtle hover zoom (non-intrusive) */
+.image-card__media:hover .image-card__img,
+.image-card__media:focus-within .image-card__img {
+  transform: scale(1.03);
+  transition: transform 300ms ease;
+}
+
+/* === Shadow modifier preserved === */
+.image-card--shadow .image-card__media {
+  box-shadow: var(--imagecard-shadow);
+}
+
+/* Remove sibling margin technique — rely on grid gap instead */
+/* .image-card + .image-card { margin-left: var(--imagecard-gutter); }  <-- removed */
+
+/* === Grid container: use gap for identical spacing === */
+.image-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(var(--imagecard-min-width), 1fr));
+  gap: var(--imagecard-gap); /* IMPORTANT: uniform spacing between columns & rows */
+  width: 100%;
+  max-width: var(--imagecard-max-width);
+  margin: 0 auto;
+  padding: 0 var(--imagecard-gutter);
+  box-sizing: border-box;
+  align-items: start;
+}
+
+/* Optional modifier: enforce exactly 4 columns on large screens */
+.image-grid--4 {
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--imagecard-gap);
+}
+
+/* Responsive fallbacks for .image-grid--4 (keeps equal gaps always) */
+@media (max-width: 1200px) {
+  .image-grid--4 { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 900px) {
+  .image-grid--4 { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 480px) {
+  .image-grid--4 { grid-template-columns: repeat(1, 1fr); }
+}
+
+/* === Accessibility: keyboard focus & visible ring === */
+.image-card__media:focus-within {
+  outline: var(--imagecard-focus-ring);
+  outline-offset: 4px;
+}
+
+/* Screen-reader helper */
+.sr-only {
+  position: absolute !important;
+  width: 1px; 
+  height: 1px;
+  padding: 0; 
+  margin: -1px;
+  overflow: hidden; 
+  clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* Small device adjustments: tighten gaps & ratio if needed */
+@media (max-width: 420px) {
+  :root {
+    --imagecard-gap: 8px;
+    --imagecard-min-width: 120px;
+    --imagecard-ratio: 3 / 2; /* slightly taller on tiny screens */
+  }
+}
+
+/* Large screens: optionally expand min-width for consistent 4-across */
+@media (min-width: 1400px) {
+  :root {
+    --imagecard-min-width: 220px;
+    --imagecard-gap: 24px;
+  }
+}

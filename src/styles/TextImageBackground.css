@@ -1,0 +1,165 @@
+/* TextImageBackground.css
+   Bannière centrée avec image en background
+   Titre en haut, paragraphes en bas, espacement configurable
+*/
+
+/* --- variables par défaut (peuvent être overridées inline via style={...}) --- */
+:root {
+  --banner-max-width: 1200px;
+  --banner-height: 400px;
+  --banner-overlay: linear-gradient(to bottom, rgba(0,0,0,0.45), rgba(0,0,0,0.35));
+  --banner-padding: 28px;
+  --banner-title-size: 40px;
+  --banner-title-size-sm: 28px;
+  --banner-text-size: 16px;
+
+  /* NEW : contrôles d'espacement dynamiques */
+  --banner-paragraph-gap: 12px;         /* espace entre les <p> */
+  --banner-title-bottom-space: 28px;    /* espace entre titre et bloc paragraphes */
+}
+
+/* wrapper de la section pour garder des gutters page-wide */
+.text-image-bg {
+  width: 100%;
+  display: block;
+  padding: 18px 12px;
+  box-sizing: border-box;
+}
+
+/* box centrée qui porte l'image de fond */
+.bg-box {
+  width: 100%;
+  max-width: var(--banner-max-width);
+  margin: 0 auto;
+  height: var(--banner-height);
+  position: relative;
+  overflow: hidden;
+  /* ensure overlay is applied but image still visible (overlay has fallback) */
+  background-image: var(--bg-image);
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-color: transparent;
+  box-shadow: 0 8px 26px rgba(0,0,0,0.12);
+}
+
+/* overlay for contrast: use var with fallback transparent to avoid hiding image */
+.bg-box .bg-overlay {
+  position: absolute;
+  inset: 0;
+  background: var(--banner-overlay, transparent); /* safe fallback */
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* content : left aligned column with space-between (titre en haut, paragraphs en bas) */
+.bg-content {
+  position: relative;
+  z-index: 2; /* above overlay */
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* place top en haut, bottom en bas */
+  padding: var(--banner-padding);
+  box-sizing: border-box;
+  color: #fff;
+  /* allow interactions by default - do not block pointer events globally */
+  pointer-events: auto;
+}
+
+/* top area (titre) - espace configurable vers le bas */
+.bg-top {
+  /* margin-bottom controls distance between top block and bottom block */
+  margin-bottom: var(--banner-title-bottom-space);
+}
+
+/* bottom area: paragraphes empilés */
+.bg-bottom {
+  max-width: 66%;
+  /* ensures paragraphs stack naturally */
+}
+
+/* Title style */
+.bg-top .banner-title {
+  margin: 0;
+  color: #fff;
+  font-weight: 800;
+  font-size: var(--banner-title-size);
+  line-height: 1.05;
+  letter-spacing: -0.5px;
+}
+
+/* paragraphs: first bold (lead), others normal.
+   spacing controlled by --banner-paragraph-gap */
+.bg-bottom .lead {
+  margin: 0 0 var(--banner-paragraph-gap) 0;
+  color: #fff;
+  font-weight: 700;
+  font-size: var(--banner-text-size);
+  line-height: 1.35;
+}
+
+.bg-bottom p {
+  margin: 0 0 var(--banner-paragraph-gap) 0;
+  color: #fff;
+  font-weight: 400;
+  font-size: var(--banner-text-size);
+  line-height: 1.35;
+}
+
+.bg-bottom p:last-child {
+  margin-bottom: 0;
+}
+
+/* small screens adjustments */
+@media (max-width: 992px) {
+  :root {
+    --banner-height: 320px;
+    --banner-padding: 22px;
+    --banner-title-size: 34px;
+    --banner-text-size: 15px;
+    /* slightly reduce spacing on tablet */
+    --banner-paragraph-gap: 8px;
+    --banner-title-bottom-space: 22px;
+  }
+  .bg-bottom { max-width: 80%; }
+}
+
+/* mobile adjustments */
+@media (max-width: 576px) {
+  :root {
+    --banner-height: 300px;
+    --banner-padding: 16px;
+    --banner-title-size: 24px;
+    --banner-text-size: 14px;
+    --banner-paragraph-gap: 6px;
+    --banner-title-bottom-space: 14px;
+  }
+  .bg-content { padding-left: 14px; padding-right: 14px; }
+  .bg-bottom { max-width: 100%; }
+  .bg-top .banner-title { font-size: var(--banner-title-size-sm); }
+}
+
+/* very small wearable / tiny widths: keep minimal content */
+@media (max-width: 360px) {
+  :root {
+    --banner-height: 180px;
+    --banner-padding: 10px;
+    --banner-title-size: 20px;
+    --banner-text-size: 12px;
+    --banner-paragraph-gap: 4px;
+    --banner-title-bottom-space: 8px;
+  }
+  .bg-bottom p { display: none; } /* hide long paragraphs on very small screens */
+  .bg-bottom .lead { display: block; font-size: 12px; }
+}
+
+/* Accessible focus for internal interactive elements (if you add a button inside bg-content) */
+.bg-content :where(a,button) {
+  /* ensure elements inside are interactive */
+  pointer-events: auto;
+}
+.bg-content :where(a,button):focus {
+  outline: 3px solid rgba(255,255,255,0.18);
+  outline-offset: 2px;
+}
